@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planetary Seismic Data Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1, h2 {
+            color: #2e6da4;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .btn {
+            padding: 10px 15px;
+            background-color: #2e6da4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        select {
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Planetary Seismic Data Analyzer</h1>
+        <p>
+            Analyze seismic data from various planets in the Solar System. Select a planet from the list below, load its data, and analyze it to identify seismic quakes within the noise.
+        </p>
+
+        <h2>Step 1: Select a Planet and Load Data</h2>
+        <p>Select a planet from the list and click the "Load Data" button to load seismic data for that planet.</p>
+        <select id="planet-select">
+            <option value="moon">Moon</option>
+            <option value="mars">Mars</option>
+            <option value="venus">Venus</option>
+            <option value="mercury">Mercury</option>
+            <option value="earth">Earth</option>
+            <option value="jupiter">Jupiter</option>
+            <option value="saturn">Saturn</option>
+        </select>
+        <button class="btn" onclick="loadSeismicData()">Load Data</button>
+
+        <h2>Step 2: Analyze Data</h2>
+        <p>Once the data is loaded, click the button below to analyze the data and identify seismic quakes.</p>
+        <button class="btn" onclick="analyzeData()">Analyze Seismic Events</button>
+
+        <h2>Results</h2>
+        <table id="seismic-results">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Magnitude</th>
+                    <th>Depth (km)</th>
+                    <th>Location</th>
+                    <th>Planet</th>
+                    <th>Identified as Seismic Event?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Results will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let seismicData = [];
+
+        // Define seismic data for multiple planets, including Earth, Venus, and Mercury
+        const planetData = {
+            moon: [
+                { Date: '2023-10-01', Magnitude: 6.0, Depth: 120, Location: 'Crater A' },
+                { Date: '2023-10-02', Magnitude: 4.2, Depth: 60, Location: 'Crater B' },
+                { Date: '2023-10-03', Magnitude: 2.0, Depth: 30, Location: 'Crater C' }
+            ],
+            mars: [
+                { Date: '2023-09-28', Magnitude: 5.5, Depth: 100, Location: 'Crater X' },
+                { Date: '2023-09-29', Magnitude: 2.1, Depth: 50, Location: 'Crater Y' },
+                { Date: '2023-09-30', Magnitude: 3.8, Depth: 80, Location: 'Crater Z' }
+            ],
+            venus: [
+                { Date: '2023-08-25', Magnitude: 7.1, Depth: 150, Location: 'Region Alpha' },
+                { Date: '2023-08-26', Magnitude: 4.0, Depth: 60, Location: 'Region Beta' }
+            ],
+            mercury: [
+                { Date: '2023-05-14', Magnitude: 3.7, Depth: 75, Location: 'Basin Omega' },
+                { Date: '2023-05-15', Magnitude: 4.5, Depth: 100, Location: 'Basin Theta' }
+            ],
+            earth: [
+                { Date: '2023-10-01', Magnitude: 5.1, Depth: 70, Location: 'California' },
+                { Date: '2023-10-02', Magnitude: 6.3, Depth: 60, Location: 'Chile' },
+                { Date: '2023-10-03', Magnitude: 4.0, Depth: 40, Location: 'Japan' }
+            ],
+            jupiter: [
+                { Date: '2023-07-15', Magnitude: 8.0, Depth: 200, Location: 'Io Volcano' },
+                { Date: '2023-07-16', Magnitude: 5.6, Depth: 90, Location: 'Ganymede' }
+            ],
+            saturn: [
+                { Date: '2023-06-10', Magnitude: 6.5, Depth: 130, Location: 'Titan' },
+                { Date: '2023-06-11', Magnitude: 5.0, Depth: 100, Location: 'Enceladus' }
+            ]
+        };
+
+        // Function to load seismic data based on selected planet
+        function loadSeismicData() {
+            const selectedPlanet = document.getElementById('planet-select').value;
+            const data = planetData[selectedPlanet];
+
+            if (!data) {
+                alert("No data available for this planet.");
+                return;
+            }
+
+            seismicData = data.map(event => ({
+                ...event,
+                Planet: selectedPlanet.charAt(0).toUpperCase() + selectedPlanet.slice(1)  // Capitalize planet name
+            }));
+
+            alert(`${seismicData.length} seismic events loaded for ${selectedPlanet.toUpperCase()}!`);
+        }
+
+        // Function to analyze seismic data
+        function analyzeData() {
+            if (seismicData.length === 0) {
+                alert("Please load the seismic data first!");
+                return;
+            }
+
+            const resultsTableBody = document.getElementById('seismic-results').getElementsByTagName('tbody')[0];
+            resultsTableBody.innerHTML = ''; // Clear previous results
+
+            seismicData.forEach(event => {
+                // Define threshold: magnitude >= 3.5 and depth >= 50 km
+                const isSeismicEvent = event.Magnitude >= 3.5 && event.Depth >= 50;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${event.Date}</td>
+                    <td>${event.Magnitude}</td>
+                    <td>${event.Depth}</td>
+                    <td>${event.Location}</td>
+                    <td>${event.Planet}</td>
+                    <td>${isSeismicEvent ? 'Yes' : 'No'}</td>
+                `;
+                resultsTableBody.appendChild(row);
+            });
+
+            alert("Data analyzed. Results are displayed.");
+        }
+    </script>
+
+</body>
+</html>
+
